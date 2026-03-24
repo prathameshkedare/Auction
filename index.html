@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auction System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px;
+      width: 28%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-save {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-edit {
+      background: #ffc107;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h2>🏏 Auction System</h2>
+
+  <div class="card">
+    <input type="hidden" id="id">
+    <input type="text" id="playerName" placeholder="Player Name">
+    <input type="text" id="teamName" placeholder="Team Name">
+    <input type="number" id="price" placeholder="Price">
+
+    <button class="btn-save" onclick="saveData()">Save Player</button>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Player</th>
+          <th>Team</th>
+          <th>Price 💰</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxyd2DlgoQCvxOBQO5pWGoUFbj9tbgu-hx1Il1cpZBc2XeQlm2lC--QNrdhxbVmlzGPkA/exec";
+
+// LOAD DATA
+function fetchData() {
+  fetch(API_URL)
+    .then(res => res.text())
+    .then(text => JSON.parse(text))
+    .then(data => {
+      let rows = "";
+
+      data.slice(1).forEach(row => {
+        rows += `
+          <tr>
+            <td>${row[0]}</td>
+            <td>${row[1]}</td>
+            <td>${row[2]}</td>
+            <td>₹ ${row[3]}</td>
+            <td>
+              <button class="btn-edit" onclick="editData(${row[0]}, '${row[1]}', '${row[2]}', ${row[3]})">Edit</button>
+              <button class="btn-delete" onclick="deleteData(${row[0]})">Delete</button>
+            </td>
+          </tr>`;
+      });
+
+      document.getElementById("tableBody").innerHTML = rows;
+    });
+}
+
+// SAVE / UPDATE
+function saveData() {
+  const id = document.getElementById("id").value;
+  const playerName = document.getElementById("playerName").value;
+  const teamName = document.getElementById("teamName").value;
+  const price = document.getElementById("price").value;
+
+  if (!playerName || !teamName || !price) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const action = id ? "update" : "create";
+
+  fetch(API_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify({
+      action,
+      id,
+      playerName,
+      teamName,
+      price
+    })
+  }).then(() => {
+    clearForm();
+    setTimeout(fetchData, 500);
+  });
+}
+
+// DELETE
+function deleteData(id) {
+  if (!confirm("Delete this player?")) return;
+
+  fetch(API_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify({
+      action: "delete",
+      id
+    })
+  }).then(() => setTimeout(fetchData, 500));
+}
+
+// EDIT
+function editData(id, playerName, teamName, price) {
+  document.getElementById("id").value = id;
+  document.getElementById("playerName").value = playerName;
+  document.getElementById("teamName").value = teamName;
+  document.getElementById("price").value = price;
+}
+
+// CLEAR FORM
+function clearForm() {
+  document.getElementById("id").value = "";
+  document.getElementById("playerName").value = "";
+  document.getElementById("teamName").value = "";
+  document.getElementById("price").value = "";
+}
+
+// INITIAL LOAD
+fetchData();
+</script>
+
+</body>
+</html>
