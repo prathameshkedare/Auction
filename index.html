@@ -1,209 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Auction System</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-
-    input {
-      padding: 10px;
-      margin: 5px;
-      width: 28%;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .btn-save {
-      background: #28a745;
-      color: white;
-    }
-
-    .btn-edit {
-      background: #ffc107;
-    }
-
-    .btn-delete {
-      background: #dc3545;
-      color: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      background: #007bff;
-      color: white;
-      padding: 10px;
-    }
-
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: center;
-    }
-
-    tr:hover {
-      background: #f1f1f1;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Players — Cricket Auction System</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
+  <!-- NAV -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">🏏 <span>Cricket</span>Auction</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Players</a>
+      <a href="teams.html" class="nav-link">Teams</a>
+    </div>
+  </nav>
 
-  <h2>🏏 Auction System</h2>
+  <div class="page">
 
-  <div class="card">
-    <input type="hidden" id="id">
-    <input type="text" id="playerName" placeholder="Player Name">
-    <input type="text" id="teamName" placeholder="Team Name">
-    <input type="number" id="price" placeholder="Price">
+    <!-- HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Player <span>Auction</span></div>
+        <div class="page-subtitle">Manage and bid on cricket players across all teams</div>
+      </div>
+    </div>
 
-    <button class="btn-save" onclick="saveData()">Save Player</button>
+    <!-- STATS -->
+    <div class="stats-strip">
+      <div class="stat-box">
+        <div class="stat-label">Total Players</div>
+        <div class="stat-value amber" id="stat-total">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-value green" id="stat-spent">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Teams Active</div>
+        <div class="stat-value" id="stat-teams">—</div>
+      </div>
+    </div>
+
+    <!-- ADD / EDIT FORM -->
+    <div class="card">
+      <div class="card-title">➕ Add / Edit Player</div>
+      <input type="hidden" id="id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Player Name</label>
+          <input type="text" id="playerName" placeholder="e.g. Virat Kohli">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team</label>
+          <select id="teamName">
+            <option value="">Select Team</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bid Price (₹)</label>
+          <input type="number" id="price" placeholder="e.g. 1500000" min="0">
+        </div>
+        <div class="form-group" style="display:flex; gap:8px; align-items:flex-end;">
+          <button class="btn btn-primary" onclick="saveData()">💾 Save Player</button>
+          <button class="btn btn-secondary" onclick="clearForm()">✕ Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEARCH + FILTER -->
+    <div class="card">
+      <div class="card-title">🔍 Search & Filter</div>
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by player name..." oninput="applyFilter()">
+        </div>
+        <select class="filter-select" id="filterTeam" onchange="applyFilter()">
+          <option value="">All Teams</option>
+        </select>
+        <button class="btn btn-secondary" onclick="document.getElementById('searchInput').value=''; document.getElementById('filterTeam').selectedIndex=0; applyFilter();">Clear</button>
+      </div>
+    </div>
+
+    <!-- PLAYERS TABLE -->
+    <div class="card">
+      <div class="card-title">📋 Player Roster</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Player</th>
+              <th>Team</th>
+              <th>Price 💰</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="5">
+              <div class="loading-state">
+                <div class="spinner"></div>
+                <div>Loading players...</div>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Player</th>
-          <th>Team</th>
-          <th>Price 💰</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-  </div>
+  <!-- TOAST -->
+  <div id="toast"></div>
 
-</div>
-
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxyd2DlgoQCvxOBQO5pWGoUFbj9tbgu-hx1Il1cpZBc2XeQlm2lC--QNrdhxbVmlzGPkA/exec";
-
-// LOAD DATA
-function fetchData() {
-  fetch(API_URL)
-    .then(res => res.text())
-    .then(text => JSON.parse(text))
-    .then(data => {
-      let rows = "";
-
-      data.slice(1).forEach(row => {
-        rows += `
-          <tr>
-            <td>${row[0]}</td>
-            <td>${row[1]}</td>
-            <td>${row[2]}</td>
-            <td>₹ ${row[3]}</td>
-            <td>
-              <button class="btn-edit" onclick="editData(${row[0]}, '${row[1]}', '${row[2]}', ${row[3]})">Edit</button>
-              <button class="btn-delete" onclick="deleteData(${row[0]})">Delete</button>
-            </td>
-          </tr>`;
-      });
-
-      document.getElementById("tableBody").innerHTML = rows;
-    });
-}
-
-// SAVE / UPDATE
-function saveData() {
-  const id = document.getElementById("id").value;
-  const playerName = document.getElementById("playerName").value;
-  const teamName = document.getElementById("teamName").value;
-  const price = document.getElementById("price").value;
-
-  if (!playerName || !teamName || !price) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  const action = id ? "update" : "create";
-
-  fetch(API_URL, {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({
-      action,
-      id,
-      playerName,
-      teamName,
-      price
-    })
-  }).then(() => {
-    clearForm();
-    setTimeout(fetchData, 500);
-  });
-}
-
-// DELETE
-function deleteData(id) {
-  if (!confirm("Delete this player?")) return;
-
-  fetch(API_URL, {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({
-      action: "delete",
-      id
-    })
-  }).then(() => setTimeout(fetchData, 500));
-}
-
-// EDIT
-function editData(id, playerName, teamName, price) {
-  document.getElementById("id").value = id;
-  document.getElementById("playerName").value = playerName;
-  document.getElementById("teamName").value = teamName;
-  document.getElementById("price").value = price;
-}
-
-// CLEAR FORM
-function clearForm() {
-  document.getElementById("id").value = "";
-  document.getElementById("playerName").value = "";
-  document.getElementById("teamName").value = "";
-  document.getElementById("price").value = "";
-}
-
-// INITIAL LOAD
-fetchData();
-</script>
-
+  <script src="js/script.js"></script>
 </body>
 </html>

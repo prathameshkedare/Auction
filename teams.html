@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teams — Cricket Auction System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">🏏 <span>Cricket</span>Auction</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Players</a>
+      <a href="teams.html" class="nav-link active">Teams</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Team <span>Management</span></div>
+        <div class="page-subtitle">Track budgets, rosters, and spending across all franchises</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-strip">
+      <div class="stat-box">
+        <div class="stat-label">Total Teams</div>
+        <div class="stat-value amber" id="stat-team-count">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-value red" id="stat-total-spent">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Budget Pool</div>
+        <div class="stat-value green" id="stat-total-budget">—</div>
+      </div>
+    </div>
+
+    <!-- ADD TEAM FORM -->
+    <div class="card">
+      <div class="card-title">➕ Add New Team</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Team Name</label>
+          <input type="text" id="teamName" placeholder="e.g. Mumbai Indians">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Owner Name</label>
+          <input type="text" id="ownerName" placeholder="e.g. Nita Ambani">
+        </div>
+        <div class="form-group" style="justify-content:flex-end;">
+          <button class="btn btn-primary" id="saveTeamBtn" onclick="saveTeam()">➕ Add Team</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAMS GRID -->
+    <div class="card">
+      <div class="card-title">🏟️ All Teams & Budgets</div>
+      <div id="teamsGrid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <div>Loading teams...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast"></div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
